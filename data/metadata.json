@@ -1,0 +1,17 @@
+[
+    {
+        "uid": "00001",
+        "Name": "Yosemite",
+        "Country": "United States",
+        "Path": "../DEMs/yosemite.tif",
+        "Latitude": 37.8651,
+        "Longitude": -119.5383,
+        "Radius": 50,
+        "Levels": 50,
+        "Type": "gif",
+        "max_color": "#0BBCD6",
+        "min_color": "#340B0B",
+        "line_kwargs": {
+            "linewidths": 0.25
+        }
+    }
