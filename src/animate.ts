@@ -1,14 +1,33 @@
 import { applyPalette, GIFEncoder, quantize } from 'gifenc'
 import { drawPrint, type PrintModel } from './render'
 
-const FRAME_MS = 110
-const HOLD_MS = 1600
+export interface RevealTiming {
+  frameMs: number
+  holdMs: number
+}
+
+/**
+ * Timing for a reveal that completes one loop in `loopSeconds`: the reveal
+ * spreads over the bands, then the finished print holds before repeating.
+ * GIF frame delays below ~30ms get clamped upward by browsers, so that's
+ * the floor.
+ */
+export function revealTiming(loopSeconds: number, bands: number): RevealTiming {
+  const holdMs = Math.min(1500, loopSeconds * 1000 * 0.3)
+  const frameMs = Math.max(30, (loopSeconds * 1000 - holdMs) / bands)
+  return { frameMs, holdMs }
+}
 
 /**
  * Play the progressive contour reveal on the given canvas.
  * Returns a cancel function.
  */
-export function playReveal(canvas: HTMLCanvasElement, model: PrintModel, W: number): () => void {
+export function playReveal(
+  canvas: HTMLCanvasElement,
+  model: PrintModel,
+  W: number,
+  timing: RevealTiming,
+): () => void {
   const bands = model.thresholds.length
   let cancelled = false
   let band = 0
@@ -16,7 +35,7 @@ export function playReveal(canvas: HTMLCanvasElement, model: PrintModel, W: numb
 
   const tick = (now: number) => {
     if (cancelled) return
-    if (now - last >= FRAME_MS) {
+    if (now - last >= timing.frameMs) {
       last = now
       drawPrint(canvas, model, W, band)
       band++
@@ -36,6 +55,7 @@ export function playReveal(canvas: HTMLCanvasElement, model: PrintModel, W: numb
 /** Render the reveal animation to an animated GIF blob. */
 export async function exportGif(
   model: PrintModel,
+  timing: RevealTiming,
   width = 640,
   onProgress?: (done: number, total: number) => void,
 ): Promise<Blob> {
@@ -55,7 +75,7 @@ export async function exportGif(
     const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
     gif.writeFrame(applyPalette(data, palette), canvas.width, canvas.height, {
       palette,
-      delay: FRAME_MS,
+      delay: timing.frameMs,
     })
     onProgress?.(band + 1, bands + 1)
     // Yield so the UI can update between frames.
@@ -66,7 +86,7 @@ export async function exportGif(
   const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
   gif.writeFrame(applyPalette(data, palette), canvas.width, canvas.height, {
     palette,
-    delay: HOLD_MS,
+    delay: timing.holdMs,
   })
   onProgress?.(bands + 1, bands + 1)
 

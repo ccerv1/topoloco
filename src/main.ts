@@ -2,7 +2,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './style.css'
 
-import { exportGif, playReveal } from './animate'
+import { exportGif, playReveal, revealTiming } from './animate'
 import { PALETTES, randomComplementaryPair } from './colormap'
 import { GALLERY } from './gallery'
 import { reversePlace, searchPlace } from './geocode'
@@ -321,6 +321,7 @@ for (const item of GALLERY) {
 // --- Export & animate ---
 
 const printSizeSelect = $<HTMLSelectElement>('#print-size')
+const gifLoopSelect = $<HTMLSelectElement>('#gif-loop')
 let hqGrid: TerrainGrid | null = null
 let hqKey = ''
 
@@ -356,7 +357,8 @@ function slug(): string {
 $<HTMLButtonElement>('#animate').addEventListener('click', () => {
   if (!model) return
   stopAnimation?.()
-  stopAnimation = playReveal(canvas, model, DISPLAY_W)
+  const timing = revealTiming(parseFloat(gifLoopSelect.value), model.thresholds.length)
+  stopAnimation = playReveal(canvas, model, DISPLAY_W, timing)
 })
 
 $<HTMLButtonElement>('#dl-png').addEventListener('click', async () => {
@@ -393,11 +395,13 @@ $<HTMLButtonElement>('#dl-svg').addEventListener('click', async () => {
 $<HTMLButtonElement>('#dl-gif').addEventListener('click', async () => {
   if (!model) return
   try {
-    const blob = await exportGif(model, 640, (done, total) =>
+    const timing = revealTiming(parseFloat(gifLoopSelect.value), model.thresholds.length)
+    const blob = await exportGif(model, timing, 640, (done, total) =>
       setStatus(`Rendering GIF… ${done}/${total}`),
     )
     download(blob, `topoloco-${slug()}.gif`)
-    setStatus('GIF saved')
+    const loopS = (timing.frameMs * model.thresholds.length + timing.holdMs) / 1000
+    setStatus(`GIF saved · ${loopS.toFixed(1)} s per loop · ${(blob.size / 1e6).toFixed(1)} MB`)
   } catch (err) {
     setStatus(`GIF export failed: ${err instanceof Error ? err.message : err}`, true)
   }
