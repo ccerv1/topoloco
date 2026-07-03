@@ -24,6 +24,7 @@ const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as
 
 const canvas = $<HTMLCanvasElement>('#print')
 const statusEl = $<HTMLDivElement>('#status')
+const stageEl = $<HTMLElement>('#stage')
 
 const defaultState: RenderState = {
   lat: GALLERY[0].lat,
@@ -80,6 +81,7 @@ async function render(): Promise<void> {
   if (key !== gridKey || !grid) {
     const token = ++fetchToken
     setStatus('Fetching terrain…')
+    stageEl.classList.add('busy')
     try {
       const g = await fetchTerrain(state.lat, state.lon, state.extentKm, state.aspect)
       if (token !== fetchToken) return // superseded by a newer request
@@ -89,6 +91,8 @@ async function render(): Promise<void> {
       if (token !== fetchToken) return
       setStatus(`Terrain fetch failed: ${err instanceof Error ? err.message : err}`, true)
       return
+    } finally {
+      if (token === fetchToken) stageEl.classList.remove('busy')
     }
   }
 
@@ -187,20 +191,18 @@ document.addEventListener('click', (e) => {
 
 // --- Controls ---
 
-const latInput = $<HTMLInputElement>('#lat')
-const lonInput = $<HTMLInputElement>('#lon')
+const coordsInput = $<HTMLInputElement>('#coords')
 const titleInput = $<HTMLInputElement>('#title')
 const extentSelect = $<HTMLSelectElement>('#extent')
 const bandsInput = $<HTMLInputElement>('#bands')
 const bandsValue = $<HTMLSpanElement>('#bands-value')
 const colorAInput = $<HTMLInputElement>('#colorA')
 const colorBInput = $<HTMLInputElement>('#colorB')
-const quantileInput = $<HTMLInputElement>('#quantile')
-const reverseInput = $<HTMLInputElement>('#reverse')
+const quantileBtn = $<HTMLButtonElement>('#quantile')
+const reverseBtn = $<HTMLButtonElement>('#reverse')
 
 function syncControls(): void {
-  latInput.value = state.lat.toFixed(4)
-  lonInput.value = state.lon.toFixed(4)
+  coordsInput.value = `${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}`
   titleInput.value = state.title
   const extVal = String(state.extentKm)
   if (![...extentSelect.options].some((o) => o.value === extVal)) {
@@ -214,8 +216,8 @@ function syncControls(): void {
   bandsValue.textContent = String(state.bands)
   colorAInput.value = state.colorA
   colorBInput.value = state.colorB
-  quantileInput.checked = state.quantile
-  reverseInput.checked = state.reverse
+  quantileBtn.classList.toggle('selected', state.quantile)
+  reverseBtn.classList.toggle('selected', state.reverse)
   document.querySelectorAll<HTMLButtonElement>('.aspect').forEach((b) => {
     b.classList.toggle('selected', b.dataset.aspect === state.aspect)
   })
@@ -225,13 +227,16 @@ function syncControls(): void {
   extentRect.setBounds(L.latLngBounds(extentBounds(state)))
 }
 
-const onCoordChange = () => {
-  const lat = parseFloat(latInput.value)
-  const lon = parseFloat(lonInput.value)
-  if (isFinite(lat) && isFinite(lon)) void setPoint(lat, lon)
-}
-latInput.addEventListener('change', onCoordChange)
-lonInput.addEventListener('change', onCoordChange)
+coordsInput.addEventListener('change', () => {
+  const m = coordsInput.value.match(/(-?\d+(?:\.\d+)?)\s*[,\s]\s*(-?\d+(?:\.\d+)?)/)
+  const lat = m ? parseFloat(m[1]) : NaN
+  const lon = m ? parseFloat(m[2]) : NaN
+  if (m && Math.abs(lat) <= 85 && Math.abs(lon) <= 180) {
+    void setPoint(lat, lon)
+  } else {
+    setStatus('Coordinates should look like "37.7456, -119.5936"', true)
+  }
+})
 
 titleInput.addEventListener('input', () => {
   state.title = titleInput.value
@@ -292,12 +297,12 @@ const onCustomColor = () => {
 colorAInput.addEventListener('change', onCustomColor)
 colorBInput.addEventListener('change', onCustomColor)
 
-quantileInput.addEventListener('change', () => {
-  state.quantile = quantileInput.checked
+quantileBtn.addEventListener('click', () => {
+  state.quantile = !state.quantile
   void render()
 })
-reverseInput.addEventListener('change', () => {
-  state.reverse = reverseInput.checked
+reverseBtn.addEventListener('click', () => {
+  state.reverse = !state.reverse
   void render()
 })
 

@@ -20,32 +20,29 @@
         <section>
           <h2>Location</h2>
           <div class="search-wrap">
-            <input id="search" type="text" placeholder="Search a place… (Enter)" autocomplete="off" />
+            <input id="search" type="text" placeholder="Search a place…" autocomplete="off" />
             <ul id="search-results" hidden></ul>
           </div>
           <div id="minimap"></div>
-          <div class="row">
-            <label>Lat <input id="lat" type="number" step="0.0001" min="-85" max="85" /></label>
-            <label>Lon <input id="lon" type="number" step="0.0001" min="-180" max="180" /></label>
-          </div>
+          <label class="full" title="Paste coordinates as lat, lon — straight from Google Maps">
+            Point <input id="coords" type="text" placeholder="37.7456, -119.5936" spellcheck="false" />
+          </label>
           <label class="full">Title <input id="title" type="text" placeholder="Print title" /></label>
         </section>
 
         <section>
           <h2>Style</h2>
-          <div class="row">
-            <label>Extent
-              <select id="extent">
-                <option value="5">5 km</option>
-                <option value="10">10 km</option>
-                <option value="20" selected>20 km</option>
-                <option value="40">40 km</option>
-                <option value="80">80 km</option>
-                <option value="160">160 km</option>
-              </select>
-            </label>
-            <span class="hint">map width at this point</span>
-          </div>
+          <label class="row" title="Ground width of the map at this point">
+            Extent
+            <select id="extent">
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+              <option value="20" selected>20 km</option>
+              <option value="40">40 km</option>
+              <option value="80">80 km</option>
+              <option value="160">160 km</option>
+            </select>
+          </label>
           <label class="row slider" title="How many elevation bands the colormap is split into — fewer for bold posters, more for fine detail">
             Contour bands
             <input id="bands" type="range" min="6" max="32" value="18" />
@@ -58,20 +55,21 @@
           </div>
           <div id="palettes"></div>
           <div class="row">
-            <button id="shuffle" title="Random complementary pair">🎲 Shuffle palette</button>
+            <button id="shuffle" title="Random complementary color pair">Shuffle</button>
             <label class="swatch">A <input id="colorA" type="color" /></label>
             <label class="swatch">B <input id="colorB" type="color" /></label>
           </div>
-          <div class="row checks">
-            <label><input id="quantile" type="checkbox" /> Quantile colors</label>
-            <label><input id="reverse" type="checkbox" /> Reverse</label>
+          <div class="row">
+            <button id="quantile" class="toggle" title="Space contours by elevation percentile — better contrast when elevations cluster">Quantile</button>
+            <button id="reverse" class="toggle" title="Flip the colormap direction">Reverse</button>
           </div>
         </section>
 
         <section>
           <h2>Export</h2>
           <div class="row">
-            <label>Print size
+            <label title="Physical size of PNG and SVG exports, at 300 DPI">
+              Print
               <select id="print-size">
                 <option value="8">8 in</option>
                 <option value="12" selected>12 in</option>
@@ -79,21 +77,18 @@
                 <option value="24">24 in</option>
               </select>
             </label>
-            <span class="hint">@ 300 DPI</span>
-          </div>
-          <div class="row">
-            <label>GIF loop
-              <select id="gif-loop" title="Total duration of one animation loop: the contour reveal plus a hold on the finished print">
+            <label title="Duration of one GIF loop — the contour reveal plus a hold on the finished print">
+              Loop
+              <select id="gif-loop">
                 <option value="3">3 s</option>
                 <option value="5" selected>5 s</option>
                 <option value="8">8 s</option>
                 <option value="12">12 s</option>
               </select>
             </label>
-            <span class="hint">reveal + hold</span>
           </div>
           <div class="row wrap">
-            <button id="animate">▶ Animate</button>
+            <button id="animate" class="primary">▶ Animate</button>
             <button id="dl-png">PNG</button>
             <button id="dl-svg">SVG</button>
             <button id="dl-gif">GIF</button>
@@ -108,14 +103,16 @@
 
         <div id="status"></div>
 
-        <p class="footer-links">
-          <a href="https://cerv.one/essays/topoloco.html" target="_blank" rel="noopener">Why I built this</a> ·
-          <a href="https://github.com/ccerv1/topoloco" target="_blank" rel="noopener">GitHub</a>
-        </p>
-        <p class="credits">
-          Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Terrain Tiles</a> (NASA SRTM et al.) ·
-          Geocoding &amp; map: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
-        </p>
+        <footer>
+          <p class="footer-links">
+            <a href="https://cerv.one/essays/topoloco.html" target="_blank" rel="noopener">Why I built this</a> ·
+            <a href="https://github.com/ccerv1/topoloco" target="_blank" rel="noopener">GitHub</a>
+          </p>
+          <p class="credits">
+            Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Terrain Tiles</a> (NASA SRTM et al.) ·
+            Geocoding &amp; map: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
+          </p>
+        </footer>
       </aside>
 
       <main id="stage">
