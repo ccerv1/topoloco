@@ -1,0 +1,284 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #141519;
+  --panel: #1c1e24;
+  --border: #2c2f38;
+  --text: #e8e6e1;
+  --muted: #9a978f;
+  --accent: #ff6b35;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 340px;
+  flex: none;
+  overflow-y: auto;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 4px;
+}
+
+.tagline {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.tagline a {
+  color: var(--accent);
+}
+
+section h2 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+input,
+select,
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--muted);
+}
+
+button.selected {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+label.full {
+  margin-top: 8px;
+}
+
+label.full input {
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.row.wrap {
+  flex-wrap: wrap;
+}
+
+.row input[type='number'] {
+  width: 90px;
+}
+
+.slider {
+  white-space: nowrap;
+}
+
+.slider input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--accent);
+}
+
+#bands-value {
+  min-width: 2ch;
+  text-align: right;
+  color: var(--text);
+}
+
+.search-wrap {
+  position: relative;
+}
+
+#search {
+  width: 100%;
+}
+
+#search-results {
+  position: absolute;
+  z-index: 1200;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#search-results li {
+  padding: 7px 9px;
+  cursor: pointer;
+}
+
+#search-results li:hover {
+  background: var(--panel);
+  color: var(--accent);
+}
+
+#minimap {
+  height: 190px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  z-index: 0;
+}
+
+.marker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+#palettes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.palette-chip {
+  height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  border: 2px solid transparent;
+}
+
+.palette-chip.selected {
+  border-color: var(--text);
+}
+
+.swatch input[type='color'] {
+  width: 34px;
+  height: 26px;
+  padding: 1px;
+}
+
+.checks label {
+  gap: 4px;
+}
+
+#status {
+  min-height: 18px;
+  color: var(--muted);
+}
+
+#status.error {
+  color: #ff7b6b;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.footer-links {
+  margin: 0 0 -10px;
+}
+
+.footer-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.credits {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.credits a {
+  color: var(--muted);
+}
+
+#stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  overflow: auto;
+}
+
+#print {
+  max-width: 100%;
+  max-height: calc(100vh - 56px);
+  width: auto;
+  height: auto;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
+}
+
+@media (max-width: 800px) {
+  #app {
+    flex-direction: column;
+    height: auto;
+  }
+
+  #sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #print {
+    max-height: none;
+  }
+}
