@@ -13,7 +13,7 @@ export const GALLERY: GalleryItem[] = [
     title: 'Yosemite Valley',
     lat: 37.7456,
     lon: -119.5936,
-    extentKm: 30,
+    extentKm: 80,
     paletteId: 'glacier',
   },
   {
@@ -45,7 +45,7 @@ export const GALLERY: GalleryItem[] = [
     title: 'Semien Mountains',
     lat: 13.2333,
     lon: 38.3667,
-    extentKm: 50,
+    extentKm: 150,
     paletteId: 'moss',
     quantile: true, // the bimodal-distribution fix, per the essay
   },
