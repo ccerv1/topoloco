@@ -412,10 +412,12 @@ $<HTMLButtonElement>('#dl-gif').addEventListener('click', async () => {
   }
 })
 
-$<HTMLButtonElement>('#share').addEventListener('click', async () => {
+const shareBtn = $<HTMLButtonElement>('#share')
+shareBtn.addEventListener('click', async () => {
   updateUrl(state)
   await navigator.clipboard.writeText(location.href)
-  setStatus('Link copied')
+  shareBtn.textContent = 'Copied ✓'
+  setTimeout(() => (shareBtn.textContent = 'Copy link'), 1400)
 })
 
 // --- Boot ---
